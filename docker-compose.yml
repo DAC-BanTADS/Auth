@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  mongo:
+    container_name: mongo_auth
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - mongo:/data/mongo
+    ports:
+      - "27027:27017"
+    networks:
+      - auth-network
+    restart: always
+
+  auth:
+    build: .
+    image: bantads_auth
+    restart: on-failure
+    container_name: bantads_auth_container
+    command: docker run -p 8080:8080 bantads_auth
+    volumes:
+      - .:/app
+      - static_data:/app/static
+    networks:
+      - auth-network
+      - rabbitmq
+    ports:
+      - "8180:8080"
+    depends_on:
+      - mongo
+
+volumes:
+  mongo:
+  static_data:
+
+networks:
+  auth-network:
+    external: false
+  rabbitmq:
+    external: true
