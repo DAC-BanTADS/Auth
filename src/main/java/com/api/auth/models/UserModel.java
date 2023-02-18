@@ -2,7 +2,6 @@ package com.api.auth.models;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.io.Serializable;
 
@@ -13,12 +12,12 @@ public class UserModel implements Serializable {
 
     public String nome;
     public String email;
-    public BCryptPasswordEncoder senha;
+    public String senha;
     public String cargo;
 
     public UserModel() {}
 
-    public UserModel(String nome, String email, BCryptPasswordEncoder senha, String cargo) {
+    public UserModel(String nome, String email, String senha, String cargo) {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
@@ -56,11 +55,11 @@ public class UserModel implements Serializable {
         this.email = email;
     }
 
-    public BCryptPasswordEncoder getSenha() {
+    public String getSenha() {
         return senha;
     }
 
-    public void setSenha(BCryptPasswordEncoder senha) {
+    public void setSenha(String senha) {
         this.senha = senha;
     }
 

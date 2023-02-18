@@ -7,12 +7,12 @@ import com.api.auth.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Base64;
 import java.util.Optional;
 
-@RestController
+@RestController("UserController")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping("/auth")
 public class UserController {
@@ -24,8 +24,8 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<Object> validaAuth(@RequestBody @Valid LoginDto loginDto) {
-        BCryptPasswordEncoder password = new BCryptPasswordEncoder(Integer.parseInt(loginDto.getSenha()));
-        Optional<UserModel> userModelOptional = userService.findByEmailAndSenha(loginDto.getEmail(), password);
+        String encodedPassword = Base64.getEncoder().encodeToString(loginDto.getSenha().getBytes());
+        Optional<UserModel> userModelOptional = userService.findByEmailAndSenha(loginDto.getEmail(), encodedPassword);
 
         if (userModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(userModelOptional.get().getId());

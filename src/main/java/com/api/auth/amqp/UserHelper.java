@@ -7,9 +7,10 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-@Component
+import java.util.Base64;
+
+@Component("UserHelper")
 public class UserHelper {
     final UserService userService;
 
@@ -26,7 +27,8 @@ public class UserHelper {
 
         userModel.setNome(userDto.getNome());
         userModel.setEmail(userDto.getEmail());
-        userModel.setSenha(new BCryptPasswordEncoder(Integer.parseInt(userDto.getSenha())));
+        String encodedPassword = Base64.getEncoder().encodeToString(userDto.getSenha().getBytes());
+        userModel.setSenha(encodedPassword);
         userModel.setCargo(userDto.getCargo());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.save(userModel));
