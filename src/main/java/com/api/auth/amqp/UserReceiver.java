@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.Payload;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @RabbitListener(queues = "user")
 public class UserReceiver {
@@ -22,21 +23,50 @@ public class UserReceiver {
     @RabbitHandler
     public UserTransfer receive(@Payload UserTransfer userTransfer) {
         if (userTransfer.getAction().equals("save-user")) {
-            if (Objects.isNull(userTransfer.getUserDto())) {
+            if (Objects.isNull(userTransfer.getUserDto().getEmail())) {
                 userTransfer.setAction("failed-user");
                 userTransfer.setMessage(("Nenhum dado de User foi passado."));
                 return userTransfer;
             }
 
-            ResponseEntity<Object> response = userHelper.saveUser(userTransfer.getUserDto());
+            ResponseEntity<String> response = userHelper.saveUser(userTransfer.getUserDto());
 
             if (response.getStatusCode().equals(HttpStatus.CREATED)) {
                 userTransfer.setAction("success-user");
+                userTransfer.setMessage(response.getBody());
                 return userTransfer;
             }
 
             userTransfer.setAction("failed-user");
-            userTransfer.setMessage(Objects.requireNonNull(response.getBody()).toString());
+            userTransfer.setMessage(Objects.requireNonNull(response.getBody()));
+            return userTransfer;
+        }
+
+        if (userTransfer.getAction().equals("update-user")) {
+            ResponseEntity<String> response = userHelper.updateUserEmail(userTransfer.getMessage(), userTransfer.getUserDto());
+
+            if (response.getStatusCode().equals(HttpStatus.OK)) {
+                userTransfer.setAction("success-user");
+                userTransfer.setMessage(response.getBody());
+                return userTransfer;
+            }
+
+            userTransfer.setAction("failed-user");
+            userTransfer.setMessage(Objects.requireNonNull(response.getBody()));
+            return userTransfer;
+        }
+
+        if (userTransfer.getAction().equals("delete-user")) {
+            ResponseEntity<String> response = userHelper.deleteUser(userTransfer.getMessage());
+
+            if (response.getStatusCode().equals(HttpStatus.OK)) {
+                userTransfer.setAction("success-user");
+                userTransfer.setMessage(response.getBody());
+                return userTransfer;
+            }
+
+            userTransfer.setAction("failed-user");
+            userTransfer.setMessage(response.getBody());
             return userTransfer;
         }
 
