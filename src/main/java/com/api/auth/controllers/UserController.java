@@ -28,7 +28,7 @@ public class UserController {
         Optional<UserModel> userModelOptional = userService.findByEmailAndSenha(loginDto.getEmail(), encodedPassword);
 
         if (userModelOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(userModelOptional.get().getId());
+            return ResponseEntity.status(HttpStatus.OK).body(userModelOptional.get());
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Erro! Usuário e/ou senha incorretos!");
         }
