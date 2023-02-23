@@ -1,1 +1,1 @@
-db.USER.insertOne({"nome": "Administrador", "email": "email@admin.com", "senha": "QURNSU4=", "cargo": "ADMIN"})
+db.USER.insertOne({"nome": "Administrador", "email": "admin@email.com", "senha": "YWRtaW4=", "cargo": "ADMIN"})
